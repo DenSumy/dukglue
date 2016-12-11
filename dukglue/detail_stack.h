@@ -5,7 +5,7 @@
 #include "detail_traits.h"
 #include "detail_types.h"
 
-#include <duktape.h>
+#include "duktape.h"
 
 namespace dukglue
 {

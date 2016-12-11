@@ -64,42 +64,42 @@ namespace dukglue
 		}
 
 		// function pointer
-		template<class Ret, class... Args, size_t... Indexes >
-		Ret apply_fp_helper(Ret(*pf)(Args...), index_tuple< Indexes... >, std::tuple<Args...>&& tup)
+		template<class Ret, class... Args, class... BakedArgs, size_t... Indexes >
+		Ret apply_fp_helper(Ret(*pf)(Args...), index_tuple< Indexes... >, std::tuple<BakedArgs...>&& tup)
 		{
 			return pf(std::forward<Args>(std::get<Indexes>(tup))...);
 		}
 
-		template<class Ret, class ... Args>
-		Ret apply_fp(Ret(*pf)(Args...), const std::tuple<Args...>&  tup)
+		template<class Ret, class ... Args, class ... BakedArgs>
+		Ret apply_fp(Ret(*pf)(Args...), const std::tuple<BakedArgs...>&  tup)
 		{
-			return apply_fp_helper(pf, typename make_indexes<Args...>::type(), std::tuple<Args...>(tup));
+			return apply_fp_helper(pf, typename make_indexes<BakedArgs...>::type(), std::tuple<BakedArgs...>(tup));
 		}
 
 		// method pointer
-		template<class Cls, class Ret, class... Args, size_t... Indexes >
-		Ret apply_method_helper(Ret(Cls::*pf)(Args...), index_tuple< Indexes... >, Cls* obj, std::tuple<Args...>&& tup)
+		template<class Cls, class Ret, class... Args, class... BakedArgs, size_t... Indexes >
+		Ret apply_method_helper(Ret(Cls::*pf)(Args...), index_tuple< Indexes... >, Cls* obj, std::tuple<BakedArgs...>&& tup)
 		{
 			return (*obj.*pf)(std::forward<Args>(std::get<Indexes>(tup))...);
 		}
 
-		template<class Cls, class Ret, class ... Args>
-		Ret apply_method(Ret(Cls::*pf)(Args...), Cls* obj, const std::tuple<Args...>& tup)
+		template<class Cls, class Ret, class ... Args, class... BakedArgs>
+		Ret apply_method(Ret(Cls::*pf)(Args...), Cls* obj, const std::tuple<BakedArgs...>& tup)
 		{
-			return apply_method_helper(pf, typename make_indexes<Args...>::type(), obj, std::tuple<Args...>(tup));
+			return apply_method_helper(pf, typename make_indexes<Args...>::type(), obj, std::tuple<BakedArgs...>(tup));
 		}
 
 		// const method pointer
-		template<class Cls, class Ret, class... Args, size_t... Indexes >
-		Ret apply_method_helper(Ret(Cls::*pf)(Args...) const, index_tuple< Indexes... >, Cls* obj, std::tuple<Args...>&& tup)
+		template<class Cls, class Ret, class... Args, class... BakedArgs, size_t... Indexes >
+		Ret apply_method_helper(Ret(Cls::*pf)(Args...) const, index_tuple< Indexes... >, Cls* obj, std::tuple<BakedArgs...>&& tup)
 		{
 			return (*obj.*pf)(std::forward<Args>(std::get<Indexes>(tup))...);
 		}
 
-		template<class Cls, class Ret, class ... Args>
-		Ret apply_method(Ret(Cls::*pf)(Args...) const, Cls* obj, const std::tuple<Args...>& tup)
+		template<class Cls, class Ret, class ... Args, class... BakedArgs>
+		Ret apply_method(Ret(Cls::*pf)(Args...) const, Cls* obj, const std::tuple<BakedArgs...>& tup)
 		{
-			return apply_method_helper(pf, typename make_indexes<Args...>::type(), obj, std::tuple<Args...>(tup));
+			return apply_method_helper(pf, typename make_indexes<Args...>::type(), obj, std::tuple<BakedArgs...>(tup));
 		}
 
 		// constructor

@@ -109,12 +109,13 @@ namespace dukglue
 
 					// read arguments and call method
 					actually_call(ctx, method_holder->method, obj, dukglue::detail::get_stack_values<Ts...>(ctx));
+                    
 					return std::is_void<RetType>::value ? 0 : 1;
 				}
 
 				// this mess is to support functions with void return values
-				template<typename Dummy = RetType>
-				static typename std::enable_if<!std::is_void<Dummy>::value>::type actually_call(duk_context* ctx, MethodType method, Cls* obj, std::tuple<Ts...>&& args)
+				template<typename Dummy = RetType, typename... BakedTs>
+				static typename std::enable_if<!std::is_void<Dummy>::value>::type actually_call(duk_context* ctx, MethodType method, Cls* obj, const std::tuple<BakedTs...>& args)
 				{
 					// ArgStorage has some static_asserts in it that validate value types,
 					// so we typedef it to force ArgStorage<RetType> to compile and run the asserts
@@ -126,8 +127,8 @@ namespace dukglue
 					DukType<typename Bare<RetType>::type>::template push<RetType>(ctx, std::move(return_val));
 				}
 
-				template<typename Dummy = RetType>
-				static typename std::enable_if<std::is_void<Dummy>::value>::type actually_call(duk_context* ctx, MethodType method, Cls* obj, std::tuple<Ts...>&& args)
+				template<typename Dummy = RetType, typename... BakedTs>
+				static typename std::enable_if<std::is_void<Dummy>::value>::type actually_call(duk_context* ctx, MethodType method, Cls* obj, const std::tuple<BakedTs...>& args)
 				{
 					dukglue::detail::apply_method(method, obj, args);
 				}
